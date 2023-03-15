@@ -15,10 +15,10 @@ import {
   Flex,
   Spacer,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import "./Dashboard.css";
-import { useLocation, useNavigate } from "react-router-dom";
-
+import {  useLocation, useNavigate } from "react-router-dom";
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 function App() {
   const products = [
     {
@@ -51,15 +51,28 @@ function App() {
     },
   ];
   const location = useLocation();
+
+  const [data, setdata] = useState([]);
   const logindata = location.state?.data;
 
   const navigate = useNavigate();
 
+  
+ 
+
+  const handleMovePage = () => {
+    navigate("/add-cart", { state: { data: data } });
+  };
   const redirectLogin = () => {
     navigate("/");
   };
   const noSpecialCharacters = logindata?.replace("@gmail.com", "");
   // console.log(noSpecialCharacters);
+  const handleAdd = (product) => {
+    setdata([...data, product]);
+    console.log(data);
+    console.log(data.length, "arr");
+  };
 
   const { isOpen, onToggle, onClose } = useDisclosure();
   return (
@@ -74,10 +87,20 @@ function App() {
           </Heading>
         </Box>
       </Box>
-      <Heading className="dashboard__products">Products</Heading>
+      <Flex className="dashboard__productgroup">
+        <Heading className="dashboard__products">Products</Heading>
+        <Spacer />
+
+        <Heading className="dashboard__basket" onClick={handleMovePage}>
+          <ShoppingBasketIcon />
+          <Heading className="dashboard__basketcount" as="small">
+            {data.length}
+          </Heading>
+        </Heading>
+      </Flex>
       <Box className="products__items">
         <ol className="products__item">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <li className="product" key={product.id}>
               <Image
                 className="product__image"
@@ -90,7 +113,9 @@ function App() {
               <Heading as="span" className="prodcuct__price">
                 ${product.price.toFixed(2)}
               </Heading>
-              <Button>Add to cart</Button>
+              <Button onClick={() => handleAdd(product, index)}>
+                Add to cart
+              </Button>
             </li>
           ))}
         </ol>
